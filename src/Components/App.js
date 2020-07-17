@@ -4,7 +4,6 @@ import MoviesCards from "./MoviesCard";
 function App() {
   const [moviesInfo, setmoviesInfo] = React.useState([]);
   const [typedInMovie, setTypedInMovie] = React.useState("");
-  const [searchFlag, setSearchFlag] = React.useState(false);
   const API_Key = "16c66b0f7fd3c3447e7067ff07db3197";
 
   function inputHandler(event) {

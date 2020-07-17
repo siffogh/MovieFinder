@@ -10,7 +10,9 @@ function MovieCard({ movieInfo }) {
 
       <div className="movieRate">
         <p>
-          <span className="star">⭐️ {movieInfo.vote_average}</span>
+          <span className="star" role="img" aria-label="Star">
+            ⭐️ {movieInfo.vote_average}
+          </span>
         </p>
         <p>
           <span> Vote:{movieInfo.vote_count}</span>
