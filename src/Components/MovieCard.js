@@ -1,22 +1,51 @@
-import React from "react";
+import React, { useContext } from "react";
+import { StateContext, DispatchContext } from "../Contexts/Contexts";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import "./App.css";
+
+toast.configure();
+
 function MovieCard({ movieInfo }) {
-  return movieInfo.poster_path && movieInfo.vote_average ? (
-    <div className="movieCard">
+  const appDispatch = useContext(DispatchContext);
+  const appState = useContext(StateContext);
+
+  if (appState.chosenMovie) {
+    toast(`Enjoy your movie: ${appState.moviesInfo[0].title}!`);
+  }
+
+  function checked() {
+    const selectedMovie = appState.moviesInfo.filter(
+      (movie) => movie.id === movieInfo.id
+    );
+    appDispatch({
+      type: "SELECT_MOVIE",
+      payload: selectedMovie,
+    });
+  }
+
+  return movieInfo.poster_path ? (
+    <div className="movieCard ">
       <img
         src={`https://image.tmdb.org/t/p/w500/${movieInfo.poster_path}`}
         alt="404"
       />
 
-      <div className="movieRate">
-        <p>
+      <div className="flex justify-around items-center">
+        <div>
           <span className="star" role="img" aria-label="Star">
             ⭐️ {movieInfo.vote_average}
           </span>
-        </p>
-        <p>
+        </div>
+        <div>
           <span> Vote:{movieInfo.vote_count}</span>
-        </p>
+        </div>
+        <div>
+          <span>
+            <input type="checkbox" onClick={checked} />
+          </span>
+        </div>
       </div>
     </div>
   ) : null;

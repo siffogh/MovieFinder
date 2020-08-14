@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import MovieCard from "./MovieCard";
+import { StateContext } from "../Contexts/Contexts";
+
 import "./App.css";
-function MoviesCards({ moviesInfo }) {
+
+function MoviesCards() {
+  const appState = useContext(StateContext);
   return (
     <div className="cardsContainer">
-      {moviesInfo.map((movieInfo, index) => (
-        <MovieCard key={index} movieInfo={movieInfo} />
+      {appState.moviesInfo.map((movieInfo) => (
+        <MovieCard key={movieInfo.id} movieInfo={movieInfo} />
       ))}
     </div>
   );
