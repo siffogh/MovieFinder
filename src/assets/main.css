@@ -577,6 +577,10 @@ video {
   height: auto;
 }
 
+body,.app{
+  background-color: #1A1F25
+}
+
 .container {
   width: 100%;
 }

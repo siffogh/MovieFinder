@@ -4,7 +4,6 @@ import { StateContext, DispatchContext } from "../Contexts/Contexts";
 import MoviesCards from "./MoviesCard";
 import axios from "axios";
 
-import "./App.css";
 
 const initialState = {
   moviesInfo: [],
@@ -105,8 +104,15 @@ function App() {
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
-        <div className=" sm:auto md:auto lg:auto bg-white shadow-2xl h-screen mx-auto flex flex-col items-center justify-center">
-          <h1 className="  text-5xl font-light py-2"> Movie Finder</h1>
+        <div className=" app w-1/2 h-screen sm:auto md:auto lg:auto  shadow-2xl h-screen mx-auto flex flex-col items-center">
+          <div>
+            <span className="  text-5xl font-light text-white py-2 ">
+              Movie
+            </span>
+            <span className="  text-5xl font-light text-white py-2 px-2 text-red-600 ">
+              Finder
+            </span>
+          </div>
           <input
             type="text"
             placeholder="Search"
