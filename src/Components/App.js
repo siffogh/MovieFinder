@@ -1,30 +1,40 @@
 import React from "react";
 import { useEffect, useReducer } from "react";
-import { StateContext, DispatchContext } from "../Contexts/Contexts";
-import MoviesCards from "./MoviesCard";
+import moviesContext from "../moviesContext";
+import MovieCards from "./MovieCards";
 import axios from "axios";
+
+const ACTION = {
+  TYPE_SEARCH: "TYPE_SEARCH",
+  SUBMIT_SEARCH: "SUBMIT_SEARCH",
+  FETCH_DATA: "FETCH_DATA",
+  FETCH_DATA_SUCCESS: "FETCH_DATA_SUCCESS",
+  FETCH_DATA_FAIL: "FETCH_DATA_FAIL",
+  SELECT_MOVIE: "SELECT_MOVIE"
+};
 
 
 const initialState = {
-  moviesInfo: [],
-  typedMovie: "",
-  submittedMovie: "",
-  chosenMovie: false,
+  movies: [],
+  search: "",
+  submittedSearch: "",
+  selectedMovie: "",
   isLoading: false,
   isError: false,
 };
 
 const reducer = (state, action) => {
-  if (action.type === "TYPING_MOVIE") {
+  if (action.type === ACTION.TYPE_SEARCH) {
     return {
       ...state,
-      typedInMovie: action.payload,
+      search: action.payload,
     };
   }
-  if (action.type === "SUBMIT_MOVIE") {
+
+  if (action.type === ACTION.SUBMIT_SEARCH) {
     return {
       ...state,
-      submittedMovie: action.payload,
+      submittedSearch: state.search,
     };
   }
 
@@ -35,10 +45,10 @@ const reducer = (state, action) => {
   //     isError: false,
   //   };
 
-  if (action.type === "FETCH_DATA_SUCCESS") {
+  if (action.type === ACTION.FETCH_DATA_SUCCESS) {
     return {
       ...state,
-      moviesInfo: action.payload,
+      movies: action.payload,
       isLoading: false,
       isError: false,
     };
@@ -51,46 +61,44 @@ const reducer = (state, action) => {
   //     isError: true,
   //   };
 
-  if (action.type === "SELECT_MOVIE") {
+  if (action.type === ACTION.SELECT_MOVIE) {
     return {
       ...state,
-      moviesInfo: action.payload,
-      chosenMovie: true,
+      selectedMovie: action.payload,
     };
   }
 };
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  console.log(state)
   const API_Key = "16c66b0f7fd3c3447e7067ff07db3197";
 
   function inputChange(event) {
     dispatch({
-      type: "TYPING_MOVIE",
+      type: ACTION.TYPE_SEARCH,
       payload: event.target.value,
     });
   }
 
-  function inputSubmit(event) {
-    if (event.key === "Enter") {
+  function onSubmit(event) {
+      event.preventDefault();
       dispatch({
-        type: "SUBMIT_MOVIE",
-        payload: event.target.value,
+        type: ACTION.SUBMIT_SEARCH
       });
-    }
   }
 
   useEffect(() => {
-    if (state.submittedMovie) {
+    if (state.submittedSearch) {
       const fetchData = async () => {
         // dispatch({ type: "FETCH_DATA" });
         try {
           const result = await axios(
-            `https://api.themoviedb.org/3/search/movie?api_key=${API_Key}&query=${state.submittedMovie}`
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_Key}&query=${state.submittedSearch}`
           );
 
           dispatch({
-            type: "FETCH_DATA_SUCCESS",
+            type: ACTION.FETCH_DATA_SUCCESS,
             payload: result.data.results,
           });
         } catch (error) {
@@ -99,11 +107,19 @@ function App() {
       };
       fetchData();
     }
-  }, [state.submittedMovie]);
+  }, [state.submittedSearch]);
+
+  function selectMovie(movie) {
+    dispatch({
+      type: ACTION.SELECT_MOVIE,
+      payload: movie
+    })
+  }
+
+  const filteredMovies = !state.selectedMovie ? state.movies : [state.selectedMovie];
 
   return (
-    <StateContext.Provider value={state}>
-      <DispatchContext.Provider value={dispatch}>
+      <moviesContext.Provider value={selectMovie}>
         <div className=" app w-1/2 h-screen sm:auto md:auto lg:auto  shadow-2xl h-screen mx-auto flex flex-col items-center">
           <div>
             <span className="  text-5xl font-light text-white py-2 ">
@@ -113,17 +129,17 @@ function App() {
               Finder
             </span>
           </div>
-          <input
-            type="text"
-            placeholder="Search"
-            className=" rounded shadow-2xl outline-none py-2 px-2"
-            onChange={inputChange}
-            onKeyDown={inputSubmit}
-          />
-          <MoviesCards />
+          <form onSubmit={onSubmit}>
+            <input
+              type="text"
+              placeholder="Search"
+              className=" rounded shadow-2xl outline-none py-2 px-2"
+              onChange={inputChange}
+            />
+          </form>
+          <MovieCards movies={filteredMovies}/>
         </div>
-      </DispatchContext.Provider>
-    </StateContext.Provider>
+      </moviesContext.Provider>
   );
 }
 
